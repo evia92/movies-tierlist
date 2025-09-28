@@ -1,223 +1,107 @@
-<!doctype html>
-<html lang="he" dir="rtl">
+<!DOCTYPE html>
+
+<html lang="he">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Movie Tier List - תבנית דירוג סרטים</title>
+  <meta charset="UTF-8">
+  <title>דירוג סרטים — ברור ושחרר</title>
   <style>
-    :root{
-      --thumb-height: 240px; /* גובה התמונות - תשנה כאן אם תרצה */
-      --thumb-max-width: 190px; /* רוחב מקסימלי */
-      --gap: 10px;
-      --bg: #111;
-      --card-bg: rgba(255,255,255,0.03);
+    body {
+      background: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
     }
-    *{box-sizing:border-box}
-    body{
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      margin:0;padding:18px;background:radial-gradient(#0e0e0e,#050505);color:#fff;
+    .tier {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      border: 2px solid black;
+      margin: 5px;
+      padding: 10px;
+      min-height: 80px;
+      font-size: 20px;
+      font-weight: bold;
+      position: relative;
     }
-
-    header{display:flex;align-items:center;gap:12px;justify-content:space-between;margin-bottom:12px}
-    h1{margin:0;font-size:18px}
-
-    .controls{display:flex;gap:8px;align-items:center}
-    button, input[type=file]{cursor:pointer}
-
-    .wrap{display:flex;flex-direction:column;gap:12px}
-
-    .tier{
-      display:flex;align-items:flex-start;gap:12px;padding:12px;border-radius:10px;background:var(--card-bg);
-      min-height:120px;overflow:auto;
+    .tier-label {
+      margin-left: 10px;
+      white-space: nowrap;
     }
-    .tier .label{width:96px;flex:0 0 96px;font-weight:700;font-size:16px;text-align:center}
-    .movies{display:flex;gap:var(--gap);align-items:flex-start;flex-wrap:wrap;padding:4px;min-height:90px}
-
-    .movie-card{width:auto;display:flex;flex-direction:column;align-items:center;gap:6px;padding:6px;border-radius:6px}
-    .movie-card img{height:var(--thumb-height);max-width:var(--thumb-max-width);object-fit:contain;border-radius:6px;background:#000}
-    .movie-card .caption{max-width:var(--thumb-max-width);font-size:12px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-
-    /* צבעים לפי טיר */
-    .tier.SSS{background:linear-gradient(90deg,#2b2b2b,#4b0000)}
-    .tier.SS{background:linear-gradient(90deg,#2b2b2b,#5a3500)}
-    .tier.S{background:linear-gradient(90deg,#2b2b2b,#6b3a00)}
-    .tier.AP{background:linear-gradient(90deg,#0b3b36,#06473d)}
-    .tier.B{background:linear-gradient(90deg,#1f1f2b,#083046)}
-    .tier.C{background:linear-gradient(90deg,#2b213a,#1a1430)}
-    .tier.unranked{background:linear-gradient(90deg,#141414,#1b2430)}
-
-    .source-area{display:flex;flex-wrap:wrap;gap:var(--gap);min-height:110px;padding:10px;border-radius:8px;border:2px dashed rgba(255,255,255,0.06);background:transparent}
-
-    .helpers{font-size:13px;color:#ccc;margin-top:8px}
-
-    footer{margin-top:12px;font-size:13px;color:#bbb}
-
-    @media (max-width:700px){:root{--thumb-height:160px;--thumb-max-width:110px}}
+    .tier-content {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      flex-grow: 1;
+      justify-content: flex-start;
+    }
+    .image-pool {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      border-top: 2px solid #444;
+      padding: 10px;
+      justify-content: center;
+    }
+    .image-pool img, .tier-content img {
+      width: 100px;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 6px;
+      cursor: grab;
+    }
+    h2 {
+      text-align: center;
+      margin: 15px 0;
+    }
   </style>
 </head>
 <body>
-  <header>
-    <h1>דירוג סרטים — גרור ושחרר</h1>
-    <div class="controls">
-      <label style="display:flex;gap:6px;align-items:center">
-        <input id="fileInput" type="file" accept="image/*" multiple style="display:inline-block">
-        <span style="font-size:13px">העלה פוסטרים</span>
-      </label>
-      <button id="exportBtn">ייצא JSON</button>
-      <label style="display:flex;align-items:center;gap:6px">
-        <input id="importFile" type="file" accept="application/json" style="display:inline-block">
-        <span style="font-size:13px">ייבא JSON</span>
-      </label>
-      <button id="clearBtn">נקה הכל</button>
-    </div>
-  </header>
+  <h2>Movies 🎬</h2>
+  <div id="tiers">
+    <div class="tier" style="background:#4b0000;"><div class="tier-content"></div><div class="tier-label">SSS</div></div>
+    <div class="tier" style="background:#804000;"><div class="tier-content"></div><div class="tier-label">SS</div></div>
+    <div class="tier" style="background:#996600;"><div class="tier-content"></div><div class="tier-label">S</div></div>
+    <div class="tier" style="background:#004d4d;"><div class="tier-content"></div><div class="tier-label">A+</div></div>
+    <div class="tier" style="background:#00264d;"><div class="tier-content"></div><div class="tier-label">B</div></div>
+    <div class="tier" style="background:#2e004d;"><div class="tier-content"></div><div class="tier-label">C</div></div>
+    <div class="tier" style="background:#333;"><div class="tier-content"></div><div class="tier-label">Unranked</div></div>
+  </div>
 
-  <main class="wrap">
-    <div class="tier SSS"><div class="label">SSS</div><div class="movies" data-tier="SSS"></div></div>
-    <div class="tier SS"><div class="label">SS</div><div class="movies" data-tier="SS"></div></div>
-    <div class="tier S"><div class="label">S</div><div class="movies" data-tier="S"></div></div>
-    <div class="tier AP"><div class="label">A+</div><div class="movies" data-tier="AP"></div></div>
-    <div class="tier B"><div class="label">B</div><div class="movies" data-tier="B"></div></div>
-    <div class="tier C"><div class="label">C</div><div class="movies" data-tier="C"></div></div>
-    <div class="tier unranked"><div class="label">Unranked</div><div class="movies" data-tier="unranked"></div></div>
-
-    <section>
-      <h3 style="margin:8px 0 6px 0">אזור המקור (תמונות שהעלית)</h3>
-      <div id="sourceArea" class="source-area" aria-label="מקור תמונות"></div>
-      <div class="helpers">גרור את הפוסטרים מהאזור הזה לכל שורה כדי לדרג. <strong>טיפ</strong>: לחץ כפול על תמונה כדי לשנות את השם. קליק ימני (או לחיצה ארוכה) ימחק.</div>
-    </section>
-
-    <footer>הערה חשובה: אם אתה מנסה להעלות 120–150 תמונות — הקובץ עלול להיות כבד והדפדפן יכול להיות איטי. אפשרות טובה יותר היא להעלות תמונות לאחסון חיצוני (למשל לגיטהאב או לאתר אחסון תמונות) ואז להשתמש ב"ייבא מ-URL" (לא ממומש כאן). אם תרצה, אוכל להסביר איך לאחסן תמונות בחינם ולהשתמש בקישורים.</footer>
-  </main>
+  <div class="image-pool" id="imagePool">
+    <!-- כאן תעלה את התמונות שלך -->
+    <img src="poster1.jpg" draggable="true">
+    <img src="poster2.jpg" draggable="true">
+    <img src="poster3.jpg" draggable="true">
+  </div>
 
   <script>
-    const fileInput = document.getElementById('fileInput');
-    const sourceArea = document.getElementById('sourceArea');
-    const exportBtn = document.getElementById('exportBtn');
-    const importFile = document.getElementById('importFile');
-    const clearBtn = document.getElementById('clearBtn');
-
-    const movies = {}; // id -> {id,src,title,tier}
-
-    function makeId(){ return 'm_'+Date.now()+'_'+Math.random().toString(36).slice(2,9); }
-
-    function createCard(movie){
-      // if card exists, return it
-      const existing = document.querySelector(`[data-id="${movie.id}"]`);
-      if(existing) return existing;
-      const card = document.createElement('div'); card.className='movie-card'; card.dataset.id=movie.id;
-      const img = document.createElement('img'); img.src = movie.src; img.alt = movie.title || '';
-      const cap = document.createElement('div'); cap.className='caption'; cap.textContent = movie.title || '';
-      card.appendChild(img); card.appendChild(cap);
-
-      card.draggable = true;
-      card.addEventListener('dragstart', (e)=>{ e.dataTransfer.setData('text/plain', movie.id); });
-
-      card.addEventListener('dblclick', ()=>{
-        const newName = prompt('ערוך שם הסרט:', movie.title || '');
-        if(newName!==null){ movie.title = newName; cap.textContent = newName; }
+    const draggables = document.querySelectorAll("img");
+    draggables.forEach(img => {
+      img.addEventListener("dragstart", e => {
+        e.dataTransfer.setData("text/plain", e.target.src);
+        e.target.classList.add("dragging");
       });
-
-      card.addEventListener('contextmenu', (e)=>{ e.preventDefault(); if(confirm('למחוק את הסרט הזה?')) removeMovie(movie.id); });
-
-      return card;
-    }
-
-    function removeMovie(id){
-      delete movies[id];
-      const el = document.querySelector(`[data-id="${id}"]`);
-      if(el && el.parentNode) el.parentNode.removeChild(el);
-    }
-
-    fileInput.addEventListener('change', async (e)=>{
-      const files = Array.from(e.target.files || []);
-      for(const f of files){
-        if(!f.type.startsWith('image/')) continue;
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-          const id = makeId();
-          movies[id] = {id, src: ev.target.result, title: f.name, tier: 'source'};
-          const card = createCard(movies[id]);
-          sourceArea.appendChild(card);
-        };
-        reader.readAsDataURL(f);
-      }
-      // reset so same files can be chosen again
-      e.target.value = '';
+      img.addEventListener("dragend", e => {
+        e.target.classList.remove("dragging");
+      });
     });
 
-    // drag/drop for areas
-    const movieAreas = document.querySelectorAll('.movies, #sourceArea');
-    movieAreas.forEach(area=>{
-      area.addEventListener('dragover', (e)=> e.preventDefault());
-      area.addEventListener('drop', (e)=>{
-        e.preventDefault(); const id = e.dataTransfer.getData('text/plain');
-        if(!id) return;
-        const movie = movies[id]; if(!movie) return;
-        const el = document.querySelector(`[data-id="${id}"]`);
-        // append the existing element (move)
-        // if dropping into a .movies container
-        let target = area;
-        // if area is inside .movies wrapper with data-tier, find that
-        if(area.classList.contains('movies')){
-          target = area;
-          movie.tier = area.dataset.tier || 'source';
-        } else if(area.id === 'sourceArea'){
-          movie.tier = 'source';
-          target = sourceArea;
+    const dropZones = document.querySelectorAll(".tier-content, .image-pool");
+    dropZones.forEach(zone => {
+      zone.addEventListener("dragover", e => {
+        e.preventDefault();
+      });
+      zone.addEventListener("drop", e => {
+        e.preventDefault();
+        const src = e.dataTransfer.getData("text/plain");
+        const dragging = document.querySelector(`img[src='${src}']`);
+        if (dragging) {
+          zone.appendChild(dragging);
         }
-        if(el) target.appendChild(el);
       });
     });
-
-    exportBtn.addEventListener('click', ()=>{
-      const out = {exportedAt: new Date().toISOString(), items: Object.values(movies)};
-      const blob = new Blob([JSON.stringify(out)], {type: 'application/json'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href = url; a.download = 'movie-tierlist-export.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-    });
-
-    importFile.addEventListener('change', (e)=>{
-      const f = e.target.files[0]; if(!f) return; const reader = new FileReader();
-      reader.onload = (ev)=>{
-        try{
-          const data = JSON.parse(ev.target.result);
-          if(!data.items) throw new Error('קובץ לא תקין');
-          // clear current
-          Object.keys(movies).forEach(k=> removeMovie(k));
-          data.items.forEach(item=>{
-            const id = item.id || makeId();
-            movies[id] = {id, src: item.src, title: item.title || '', tier: item.tier || 'source'};
-            const card = createCard(movies[id]);
-            // append to proper area
-            const area = document.querySelector(`.movies[data-tier="${movies[id].tier}"]`);
-            if(area) area.appendChild(card); else sourceArea.appendChild(card);
-          });
-          alert('ייבוא הושלם');
-        }catch(err){ alert('שגיאה בייבוא: '+err.message); }
-      };
-      reader.readAsText(f);
-      e.target.value = '';
-    });
-
-    clearBtn.addEventListener('click', ()=>{
-      if(!confirm('אתה בטוח שאתה רוצה למחוק את כל התמונות והדירוג?')) return;
-      Object.keys(movies).forEach(k=> removeMovie(k));
-    });
-
-    // small usability: allow double-click dropping to clone from source (optional)
-    sourceArea.addEventListener('dblclick', (e)=>{
-      const card = e.target.closest('.movie-card'); if(!card) return;
-      const id = card.dataset.id; const movie = movies[id]; if(!movie) return;
-      // clone into unranked by default
-      const newId = makeId();
-      movies[newId] = {id:newId, src:movie.src, title:movie.title, tier:'unranked'};
-      const newCard = createCard(movies[newId]);
-      document.querySelector('.movies[data-tier="unranked"]').appendChild(newCard);
-    });
-
-    // note: no auto-save to localStorage by default (big images). Use export/import to save layout.
-
   </script>
+
 </body>
 </html>
